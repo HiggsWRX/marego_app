@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marego_app/helpers/loading/loading_screen.dart';
+import 'package:marego_app/services/auth/bloc/auth_bloc.dart';
+import 'package:marego_app/services/auth/bloc/auth_event.dart';
+import 'package:marego_app/services/auth/bloc/auth_state.dart';
+import 'package:marego_app/services/auth/firebase_auth_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const AppWrapper());
 }
 
@@ -14,6 +21,41 @@ class AppWrapper extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.green,
         ),
-        home: Container());
+        home: BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(FirebaseAuthProvider()),
+          child: const HomePage(),
+        ));
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<AuthBloc>().add(const AuthEventInitialize());
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state.isLoading) {
+        LoadingScreen().show(
+            context: context,
+            text: state.loadingText ?? 'Please wait a moment');
+      } else {
+        LoadingScreen().hide();
+      }
+    }, builder: (context, state) {
+      if (state is AuthStateAuthenticated) {
+        return const Text('Authenticated');
+      } else if (state is AuthStateUnverifiedUser) {
+        return const Text('Unverified');
+      } else if (state is AuthStateUnauthenticated) {
+        return const Text('Unauthenticated');
+      } else if (state is AuthStateForgotPassword) {
+        return const Text('Forgot Password');
+      } else if (state is AuthStateRegistering) {
+        return const Text('Registering');
+      } else {
+        return const Center(child: CircularProgressIndicator());
+      }
+    });
   }
 }
