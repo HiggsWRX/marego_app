@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marego_app/services/auth/auth_provider.dart';
+import 'package:marego_app/services/auth/auth_user.dart';
 import 'package:marego_app/services/auth/bloc/auth_event.dart';
 import 'package:marego_app/services/auth/bloc/auth_state.dart';
 
@@ -8,18 +9,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       : super(const AuthStateUninitialized(isLoading: true)) {
     on<AuthEventInitialize>((_, emit) async {
       await provider.initialize();
-      final user = provider.currentUser;
+      // final user = provider.currentUser;
 
-      if (user == null) {
-        emit(const AuthStateUnauthenticated(
-          exception: null,
-          isLoading: false,
-        ));
-      } else if (!user.isEmailVerified) {
-        emit(const AuthStateUnverifiedUser(isLoading: false));
-      } else {
-        emit(AuthStateAuthenticated(user: user, isLoading: false));
-      }
+      // if (user == null) {
+      //   emit(const AuthStateUnauthenticated(
+      //     exception: null,
+      //     isLoading: false,
+      //   ));
+      // } else if (!user.isEmailVerified) {
+      //   emit(const AuthStateUnverifiedUser(isLoading: false));
+      // } else {
+      //   emit(AuthStateAuthenticated(user: user, isLoading: false));
+      // }
+      const AuthUser testUser = AuthUser(
+        id: '1',
+        email: 'test@mail.com',
+        isEmailVerified: true,
+      );
+      emit(const AuthStateAuthenticated(user: testUser, isLoading: false));
     });
 
     on<AuthEventRegister>((event, emit) async {
@@ -43,33 +50,47 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventAuthenticate>((event, emit) async {
       emit(const AuthStateUnauthenticated(
-          exception: null, isLoading: true, loadingText: 'Logging you in...'));
+        exception: null,
+        isLoading: true,
+        loadingText: 'Logging you in...',
+      ));
 
-      final email = event.email;
-      final password = event.password;
+      const AuthUser testUser = AuthUser(
+        id: '1',
+        email: 'test@mail.com',
+        isEmailVerified: true,
+      );
+      emit(const AuthStateUnauthenticated(
+        exception: null,
+        isLoading: false,
+      ));
+      emit(const AuthStateAuthenticated(user: testUser, isLoading: false));
 
-      try {
-        final user = await provider.logIn(email: email, password: password);
+      // final email = event.email;
+      // final password = event.password;
 
-        if (!user.isEmailVerified) {
-          emit(const AuthStateUnauthenticated(
-            exception: null,
-            isLoading: false,
-          ));
-          emit(const AuthStateUnverifiedUser(isLoading: false));
-        } else {
-          emit(const AuthStateUnauthenticated(
-            exception: null,
-            isLoading: false,
-          ));
-          emit(AuthStateAuthenticated(user: user, isLoading: false));
-        }
-      } on Exception catch (e) {
-        emit(AuthStateUnauthenticated(
-          exception: e,
-          isLoading: false,
-        ));
-      }
+      // try {
+      //   final user = await provider.logIn(email: email, password: password);
+
+      //   if (!user.isEmailVerified) {
+      //     emit(const AuthStateUnauthenticated(
+      //       exception: null,
+      //       isLoading: false,
+      //     ));
+      //     emit(const AuthStateUnverifiedUser(isLoading: false));
+      //   } else {
+      //     emit(const AuthStateUnauthenticated(
+      //       exception: null,
+      //       isLoading: false,
+      //     ));
+      //     emit(AuthStateAuthenticated(user: user, isLoading: false));
+      //   }
+      // } on Exception catch (e) {
+      //   emit(AuthStateUnauthenticated(
+      //     exception: e,
+      //     isLoading: false,
+      //   ));
+      // }
     });
 
     on<AuthEventUnauthenticate>((_, emit) async {
