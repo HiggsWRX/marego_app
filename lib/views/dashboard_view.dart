@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marego_app/components/marego_app_drawer.dart';
 import 'package:marego_app/services/auth/bloc/auth_bloc.dart';
-import 'package:marego_app/services/auth/bloc/auth_event.dart';
 import 'package:marego_app/services/auth/bloc/auth_state.dart';
+import 'package:marego_app/utils/biometrics/authenticate_with_biometrics.dart';
 import 'package:marego_app/utils/dialogs/error_dialog.dart';
 
 class DashboardView extends StatefulWidget {
@@ -102,8 +100,13 @@ class _DashboardViewState extends State<DashboardView> {
                         elevation: 1,
                         margin: const EdgeInsets.all(16),
                         child: ListTile(
-                          onTap: () {
-                            showErrorDialog(context, 'Hi!');
+                          onTap: () async {
+                            final couldAuthenticate =
+                                await authenticateWithBiometrics();
+
+                            if (!mounted) return;
+                            showErrorDialog(context,
+                                'Could authenticate? $couldAuthenticate');
                           },
                           title: const Text('Check-in | Check-out',
                               style: TextStyle(

@@ -45,6 +45,8 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Needs user consent to buy public transportation tickets @TODO change this</string>
 	<key>NSMotionUsageDescription</key>
 	<string>App needs location data @TODO change this</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
