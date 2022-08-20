@@ -42,7 +42,7 @@ dependencies:
   firebase_analytics: ^9.3.2
   envied: ^0.2.2
   flutter_svg: ^1.1.4
-  location: ^4.4.0
+  flutter_background_geolocation: ^4.7.1
 
 dev_dependencies:
   flutter_test:
