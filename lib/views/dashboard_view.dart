@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marego_app/components/marego_app_drawer.dart';
 import 'package:marego_app/services/auth/bloc/auth_bloc.dart';
 import 'package:marego_app/services/auth/bloc/auth_event.dart';
 import 'package:marego_app/services/auth/bloc/auth_state.dart';
@@ -24,18 +25,7 @@ class _DashboardViewState extends State<DashboardView> {
 
     // Fired whenever a location is recorded
     bg.BackgroundGeolocation.onLocation((bg.Location location) {
-      log('[location]');
       currentLocation = location;
-    });
-
-    // Fired whenever the plugin changes motion-state (stationary->moving and vice-versa)
-    bg.BackgroundGeolocation.onMotionChange((bg.Location location) {
-      log('[motionchange]');
-    });
-
-    // Fired whenever the state of location-services changes.  Always fired at boot
-    bg.BackgroundGeolocation.onProviderChange((bg.ProviderChangeEvent event) {
-      log('[providerchange]');
     });
 
     bg.BackgroundGeolocation.ready(
@@ -51,21 +41,6 @@ class _DashboardViewState extends State<DashboardView> {
       if (!state.enabled) {
         bg.BackgroundGeolocation.start();
       }
-    });
-  }
-
-  // Manually fetch the current position.
-  void _onClickGetCurrentPosition() {
-    bg.BackgroundGeolocation.getCurrentPosition(
-            persist: true, // <-- do persist this location
-            desiredAccuracy: 0, // <-- desire best possible accuracy
-            timeout: 30, // <-- wait 30s before giving up.
-            samples: 3 // <-- sample 3 location before selecting best.
-            )
-        .then((bg.Location location) {
-      currentLocation = location;
-    }).catchError((error) {
-      print('[getCurrentPosition] ERROR: $error');
     });
   }
 
@@ -149,7 +124,6 @@ class _DashboardViewState extends State<DashboardView> {
                             if (snapshot.hasData) {
                               final bg.Location location =
                                   snapshot.data as bg.Location;
-                              log(location.coords.toString());
                               return Text(
                                 'Current user location: ${location.coords.latitude}, ${location.coords.longitude}',
                                 style: const TextStyle(
@@ -158,7 +132,7 @@ class _DashboardViewState extends State<DashboardView> {
                                 ),
                               );
                             } else {
-                              return Container();
+                              return const Text('Waiting for location...');
                             }
                           })),
                     ],
@@ -170,39 +144,7 @@ class _DashboardViewState extends State<DashboardView> {
             );
           },
         ),
-        endDrawer: Drawer(
-          backgroundColor: const Color.fromARGB(255, 138, 207, 40),
-          child: ListView(
-            children: [
-              ListTile(
-                title: const Text('Settings',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    )),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.logout_rounded,
-                  color: Colors.white70,
-                ),
-                title: const Text('Logout',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    )),
-                onTap: () {
-                  BlocProvider.of<AuthBloc>(context)
-                      .add(const AuthEventUnauthenticate());
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
+        endDrawer: const MaregoAppDrawer(),
       ),
     );
   }

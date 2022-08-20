@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:marego_app/helpers/loading/loading_screen.dart';
 import 'package:marego_app/services/auth/bloc/auth_bloc.dart';
 import 'package:marego_app/services/auth/bloc/auth_event.dart';
@@ -8,8 +9,10 @@ import 'package:marego_app/services/auth/firebase_auth_provider.dart';
 import 'package:marego_app/views/dashboard_view.dart';
 import 'package:marego_app/views/login_view.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox<String>('devSettingsBox');
   runApp(const AppWrapper());
 }
 
