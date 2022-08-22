@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marego_app/services/auth/auth_exceptions.dart';
 import 'package:marego_app/services/auth/bloc/auth_bloc.dart';
 import 'package:marego_app/services/auth/bloc/auth_event.dart';
